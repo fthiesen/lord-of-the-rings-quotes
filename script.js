@@ -49,7 +49,7 @@ lord.getFormResults = function(){
 lord.getAllQuotes = function(offset){
     $.ajax({
         url: `https://the-one-api.dev/v2/quote?offset=${offset}`,
-        headers: { 'Authorization': 'Bearer ymgKsKhmFApGLPhbQQvS' },
+        headers: { 'Authorization': 'Bearer ZhQtwYK9KgoTe9sIzeeC' },
         method: `GET`,
         dataType: `JSON`
     }).then( function(data){
@@ -131,7 +131,7 @@ lord.getData = function(category){
 
     const apiData = $.ajax({
         url: `https://the-one-api.dev/v2/${category}`,
-        headers: { 'Authorization': 'Bearer ymgKsKhmFApGLPhbQQvS' },
+        headers: { 'Authorization': 'Bearer ZhQtwYK9KgoTe9sIzeeC' },
         method: `GET`,
         dataType: `JSON`
     });
