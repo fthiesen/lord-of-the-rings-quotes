@@ -9,20 +9,34 @@ let charsArray;
 // get movies from api
 // and populate form with movies list
 lord.getMovies = function(){
-    lord.getData('movie').done( function(response){
-        
-        moviesArray = response.docs;
-        
-        moviesArray.forEach( function(movie){
-            $('select#movie').append(`
-                <option value="${movie._id}">${movie.name}</option>
-            `);
-        })
-    
-        lord.getFormResults();
 
+    lord.getData('movie').done( function(response){
+        moviesArray = response.docs;
+
+        lord.getAllQuotes();
     });
+
 }; // end of getMovies
+
+// filter movies that have quotes
+lord.filterMovies = function(){
+
+    moviesArray = moviesArray.filter( function(movie){
+        const hasQuote = quotesArray.find( function(quote) { 
+            return (movie._id === quote.movie)
+        })
+        return hasQuote;
+    });
+
+    moviesArray.forEach( function(movie){
+        $('select#movie').append(`
+            <option value="${movie._id}">${movie.name}</option>
+        `);
+    });
+
+    lord.getFormResults();
+
+}; // end of filterMovies()
 
 // listen to form
 lord.getFormResults = function(){
@@ -34,9 +48,8 @@ lord.getFormResults = function(){
 
         movieId = $('#movie option:selected').val();
 
-        // reset quotes array and call function to load quotes from selected movie
-        quotesArray = [];
-        lord.getAllQuotes();
+        // call function to load quotes from selected movie
+        lord.getQuote();
 
     }); // end of listening to the form
 
@@ -47,6 +60,7 @@ lord.getFormResults = function(){
 // api has a limit of 1000 results
 // there are 2389 quotes in the api at the moment
 lord.getAllQuotes = function(offset){
+
     $.ajax({
         url: `https://the-one-api.dev/v2/quote?offset=${offset}`,
         headers: { 'Authorization': 'Bearer ZhQtwYK9KgoTe9sIzeeC' },
@@ -63,7 +77,7 @@ lord.getAllQuotes = function(offset){
         if (offset < data.total){
             lord.getAllQuotes(offset);
         } else {
-            lord.getQuote();
+            lord.filterMovies();
         }
     });
         
@@ -107,6 +121,7 @@ lord.getQuote = function(){
 
 // get characters, find the character that said the quote and display details
 lord.getChar = function(randomQuoteCharId){
+
     lord.getData('character').done( function(response){
         charsArray = response.docs;
 
@@ -120,10 +135,10 @@ lord.getChar = function(randomQuoteCharId){
             <p>Said by: <strong>${character[0].name}</strong><br>
             Race: ${character[0].race}<br>
             More info: <a href="${character[0].wikiUrl}" target="_blank">Wiki</a></p>
-            <button class="try-again">Try again</button>
+            <button class="try-again">Back</button>
         `);
-
     });
+
 }; // end of getChars
 
 // api call
@@ -135,7 +150,9 @@ lord.getData = function(category){
         method: `GET`,
         dataType: `JSON`
     });
-        return apiData;
+
+    return apiData;
+
 };
 
 // listen to try again button
